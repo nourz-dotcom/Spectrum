@@ -1,0 +1,1636 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Spectrum</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&display=swap" rel="stylesheet">
+
+<style>
+@property --lvl{syntax:"<percentage>";inherits:false;initial-value:0%}
+@property --halo{syntax:"<number>";inherits:false;initial-value:0}
+@property --g1{syntax:"<color>";inherits:true;initial-value:#A9CFA6}
+@property --g2{syntax:"<color>";inherits:true;initial-value:#9CC6D2}
+
+/* Layout: one calm column on a soft field of colour that follows the person's state,
+   a floating tab pill, and full-screen quiet rooms for the exercises. */
+:root{
+  --paper:#E7ECE3;
+  --shell:#F8F9F4;
+  --ink:#1B2B27;
+  --ink-soft:#4E5F57;
+  --line:#CAD3C2;
+  --hover:#E0E6DB;
+  --teal:#2D6A77;
+  --teal-deep:#235360;
+  --teal-ink:#1D4852;
+  --teal-soft:#D3E7EA;
+  --teal-tint:#E9F3F4;
+  --on-teal:#FFFFFF;
+  --moss:#7BA277;
+  --moss-deep:#3E6445;
+  --on-moss:#FFFFFF;
+  --dusk:#6F89A8;
+  --amber:#C4863F;
+  --amber-tint:#FAF3E4;
+  --iris:#6B67A3;
+  --iris-tint:#ECEAF7;
+  --amb-op:.65;
+  --shadow:0 1px 2px rgba(27,43,39,.06),0 4px 14px rgba(27,43,39,.06);
+  --shadow-lift:0 2px 4px rgba(27,43,39,.08),0 10px 26px rgba(27,43,39,.10);
+  --r:14px;
+  --f-display:"Bricolage Grotesque","Atkinson Hyperlegible",system-ui,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#111A19;--shell:#1A2524;--ink:#E5EEE9;--ink-soft:#A3B3AB;--line:#2E3D3A;--hover:#233230;
+    --teal:#6CB3C2;--teal-deep:#8CC8D5;--teal-ink:#A9D9E3;--teal-soft:#203A3F;--teal-tint:#182A2C;--on-teal:#0C1D21;
+    --moss:#86AE82;--moss-deep:#5F8E62;--on-moss:#0E1A10;
+    --dusk:#8FA8C6;--amber:#D9A25C;--amber-tint:#2B2518;--iris:#A7A3DE;--iris-tint:#24223A;
+    --amb-op:.28;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
+    --shadow-lift:0 2px 4px rgba(0,0,0,.35),0 10px 26px rgba(0,0,0,.35);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#111A19;--shell:#1A2524;--ink:#E5EEE9;--ink-soft:#A3B3AB;--line:#2E3D3A;--hover:#233230;
+  --teal:#6CB3C2;--teal-deep:#8CC8D5;--teal-ink:#A9D9E3;--teal-soft:#203A3F;--teal-tint:#182A2C;--on-teal:#0C1D21;
+  --moss:#86AE82;--moss-deep:#5F8E62;--on-moss:#0E1A10;
+  --dusk:#8FA8C6;--amber:#D9A25C;--amber-tint:#2B2518;--iris:#A7A3DE;--iris-tint:#24223A;
+  --amb-op:.28;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 4px 14px rgba(0,0,0,.25);
+  --shadow-lift:0 2px 4px rgba(0,0,0,.35),0 10px 26px rgba(0,0,0,.35);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--f-body);
+  font-size:17px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+body.no-motion *,body.no-motion *::before,body.no-motion *::after{transition:none!important;animation:none!important}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{transition:none!important;animation:none!important}
+}
+
+/* ---------- ambient field: colour follows the check-in ---------- */
+#ambient{
+  position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;
+  --g1:#A9CFA6;--g2:#9CC6D2;
+  transition:--g1 1.8s ease,--g2 1.8s ease;
+}
+#ambient::before,#ambient::after{content:"";position:absolute;border-radius:50%;opacity:var(--amb-op)}
+#ambient::before{
+  width:90vmax;height:90vmax;left:-38vmax;top:-48vmax;
+  background:radial-gradient(closest-side,var(--g1),transparent);
+  animation:drift1 38s ease-in-out infinite alternate;
+}
+#ambient::after{
+  width:80vmax;height:80vmax;right:-34vmax;bottom:-42vmax;
+  background:radial-gradient(closest-side,var(--g2),transparent);
+  animation:drift2 46s ease-in-out infinite alternate;
+}
+#ambient[data-state="anxious"]{--g1:#AEBFDD;--g2:#CAC4EB}
+#ambient[data-state="meltdown"]{--g1:#E0CCA6;--g2:#D3D6C6}
+#ambient[data-state="shutdown"]{--g1:#A2B8BF;--g2:#B7BECC}
+@keyframes drift1{to{transform:translate(8vmax,6vmax) scale(1.08)}}
+@keyframes drift2{to{transform:translate(-7vmax,-5vmax) scale(1.06)}}
+
+#dimmer{position:fixed;inset:0;z-index:999;background:rgba(8,12,10,.16);pointer-events:none;display:none}
+body.dim #dimmer{display:block}
+
+.wrap{
+  position:relative;z-index:1;max-width:640px;margin:0 auto;
+  padding-top:calc(52px + env(safe-area-inset-top,0px));padding-bottom:150px;
+  padding-left:max(20px,env(safe-area-inset-left,0px));
+  padding-right:max(20px,env(safe-area-inset-right,0px));
+}
+.screen{display:none}
+.screen.on{display:block}
+
+/* gentle entrance, staggered; resting state is fully visible */
+@keyframes rise{from{opacity:0;transform:translateY(12px)}}
+.screen.on>*,.ob.on>*{animation:rise .55s cubic-bezier(.2,.7,.2,1) backwards}
+.screen.on>*:nth-child(2),.ob.on>*:nth-child(2){animation-delay:.05s}
+.screen.on>*:nth-child(3),.ob.on>*:nth-child(3){animation-delay:.1s}
+.screen.on>*:nth-child(4),.ob.on>*:nth-child(4){animation-delay:.15s}
+.screen.on>*:nth-child(5),.ob.on>*:nth-child(5){animation-delay:.2s}
+.screen.on>*:nth-child(6),.ob.on>*:nth-child(6){animation-delay:.25s}
+.screen.on>*:nth-child(n+7),.ob.on>*:nth-child(n+7){animation-delay:.3s}
+
+/* ---------- type ---------- */
+h1,h2{font-family:var(--f-display);text-wrap:balance}
+h1{font-size:clamp(1.8rem,6.4vw,2.3rem);line-height:1.15;margin:0 0 .5rem;font-weight:700;letter-spacing:-.015em;color:var(--teal-ink)}
+h2{font-size:1.3rem;line-height:1.25;margin:2.2rem 0 .7rem;font-weight:700;letter-spacing:-.01em;color:var(--teal-ink)}
+.screen>h1::after,.ob>h1::after{
+  content:"";display:block;width:84px;height:6px;border-radius:3px;margin-top:.7rem;
+  background:linear-gradient(90deg,var(--moss),var(--teal),var(--dusk),var(--iris),var(--amber));
+}
+.ob[data-ob="0"]>h1::after{display:none}
+h3{font-size:1rem;margin:1.5rem 0 .5rem;font-weight:700}
+p{margin:0 0 1rem;max-width:62ch}
+.sub{color:var(--ink-soft);margin-bottom:1.6rem}
+.tiny{font-size:.86rem;color:var(--ink-soft);line-height:1.5}
+
+/* ---------- buttons ---------- */
+button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.btn{
+  background:linear-gradient(180deg,var(--teal),var(--teal-deep));
+  color:var(--on-teal);border:none;border-radius:var(--r);
+  padding:.9rem 1.5rem;font-weight:700;box-shadow:var(--shadow);
+  transition:transform .15s,box-shadow .2s,filter .2s;
+}
+.btn:hover{box-shadow:var(--shadow-lift);filter:brightness(1.05)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line);box-shadow:none}
+.btn.ghost:hover{background:var(--hover);filter:none}
+.btn.wide{display:block;width:100%;text-align:center}
+.btn:disabled{opacity:.4;cursor:default;box-shadow:none}
+.btn:disabled:active{transform:none}
+:focus-visible{outline:3px solid var(--teal);outline-offset:3px}
+.screen>.btn.wide,.ob>.btn.wide{margin-top:.6rem}
+
+/* ---------- choice chips (radio dot shows selection) ---------- */
+.choices{display:flex;flex-wrap:wrap;gap:.55rem;margin-bottom:1.3rem}
+.chip{
+  display:inline-flex;align-items:center;gap:.6rem;
+  background:var(--shell);border:1.5px solid var(--line);border-radius:var(--r);
+  padding:.65rem 1rem;text-align:left;box-shadow:var(--shadow);
+  transition:border-color .15s,background .2s,transform .15s;
+}
+.chip[aria-pressed]::before{
+  content:"";flex:0 0 auto;width:16px;height:16px;border-radius:50%;
+  border:2px solid var(--line);background:var(--shell);
+  transition:background .2s,border-color .2s,box-shadow .2s;
+}
+.chip:hover{border-color:var(--teal)}
+.chip:active{transform:scale(.97)}
+.chip[aria-pressed="true"]{border-color:var(--teal);background:var(--teal-soft);font-weight:700}
+.chip[aria-pressed="true"]::before{background:var(--teal);border-color:var(--teal);box-shadow:inset 0 0 0 3px var(--teal-soft)}
+.chip.act{padding:.45rem .9rem;font-size:.9rem}
+
+/* ---------- state orb (check-in) ---------- */
+.orb-wrap{display:grid;justify-items:center;gap:.9rem;margin:.6rem 0 1.4rem;text-align:center}
+.orb{
+  --lvl:0%;--halo:0;
+  width:132px;height:132px;border-radius:50%;position:relative;overflow:visible;
+  border:2px solid color-mix(in srgb,var(--teal) 40%,var(--line));
+  background:linear-gradient(to top,var(--moss) var(--lvl),transparent var(--lvl)),var(--shell);
+  box-shadow:
+    0 0 0 calc(var(--halo)*9px) color-mix(in srgb,var(--amber) 22%,transparent),
+    0 0 calc(var(--halo)*38px) color-mix(in srgb,var(--amber) 38%,transparent),
+    var(--shadow);
+  transition:--lvl .7s cubic-bezier(.3,.8,.3,1),--halo .7s ease;
+}
+.orb::after{
+  content:"";position:absolute;left:18%;right:18%;top:8%;height:24%;border-radius:50%;
+  background:linear-gradient(to bottom,rgba(255,255,255,.4),transparent);
+}
+.orb-cap{margin:0;min-height:3.2em;color:var(--ink-soft);max-width:30ch}
+
+/* ---------- the scale: tap segments, no dragging ---------- */
+.scale{display:flex;align-items:flex-end;gap:.45rem;margin:.2rem 0 .4rem}
+.seg{
+  flex:1;height:var(--h,60px);min-height:44px;border:1.5px solid var(--line);background:var(--shell);
+  border-radius:10px;box-shadow:var(--shadow);transition:background .25s,border-color .25s,transform .15s;
+}
+.seg:hover{border-color:var(--teal)}
+.seg:active{transform:scale(.96)}
+.seg.fill{background:linear-gradient(180deg,var(--moss),var(--moss-deep));border-color:var(--moss-deep)}
+.seg.fill.warm{background:linear-gradient(180deg,var(--amber),color-mix(in srgb,var(--amber) 70%,#000));border-color:var(--amber)}
+.scale-ends{display:flex;justify-content:space-between;gap:1rem;font-size:.85rem;color:var(--ink-soft);margin-bottom:1.4rem}
+
+/* ---------- panels ---------- */
+.panel{background:var(--shell);border:1px solid var(--line);border-radius:18px;padding:1.15rem 1.3rem;margin-bottom:1rem;box-shadow:var(--shadow)}
+.panel.mark{background:var(--teal-tint);border-color:color-mix(in srgb,var(--teal) 28%,var(--line))}
+.panel.idea{background:var(--iris-tint);border-color:color-mix(in srgb,var(--iris) 30%,var(--line))}
+.panel.attn{background:var(--amber-tint);border-color:color-mix(in srgb,var(--amber) 35%,var(--line))}
+.pill{
+  display:inline-flex;align-items:center;gap:.5rem;padding:.2rem .8rem;margin-bottom:.7rem;
+  border-radius:99px;background:var(--shell);border:1px solid var(--line);font-size:.85rem;font-weight:700;color:var(--teal-ink);
+}
+.pill::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--moss)}
+.pill[data-st="anxious"]::before{background:var(--dusk)}
+.pill[data-st="meltdown"]::before{background:var(--amber)}
+.pill[data-st="shutdown"]::before{background:var(--iris)}
+.kv{display:grid;grid-template-columns:minmax(6rem,34%) minmax(0,1fr);gap:.2rem 1rem;padding:.7rem 0;border-bottom:1px solid var(--line)}
+.kv:first-child{padding-top:0}
+.kv:last-child{border-bottom:none;padding-bottom:0}
+.kv b{font-size:.9rem}
+.kv span{color:var(--ink-soft);font-size:.92rem;overflow-wrap:anywhere}
+.say p{margin:0}
+.say-actions{display:flex;gap:.5rem;flex-wrap:wrap;margin-top:.8rem}
+
+/* ---------- onboarding ---------- */
+.prog{display:flex;align-items:center;gap:.8rem;padding:.3rem 0 1.2rem;color:var(--ink-soft);font-size:.9rem}
+.prog-bar{flex:1;height:6px;background:var(--line);border-radius:3px;overflow:hidden}
+.prog-fill{display:block;height:100%;background:linear-gradient(90deg,var(--moss),var(--teal),var(--iris));width:0;border-radius:3px;transition:width .4s cubic-bezier(.3,.8,.3,1)}
+
+.hero{
+  --px:0;margin:0 -8px 1.2rem;
+}
+.hero svg{display:block;width:100%;height:auto;max-width:100%;overflow:visible}
+.hero path{
+  stroke:var(--c);stroke-dasharray:1;stroke-dashoffset:0;opacity:.92;
+  transform:translateX(calc(var(--px)*var(--k)*34px));
+  transition:transform .7s cubic-bezier(.2,.7,.2,1);
+  animation:draw 1.7s cubic-bezier(.3,.7,.2,1) backwards;animation-delay:calc(var(--n)*.14s);
+}
+@keyframes draw{from{stroke-dashoffset:1}}
+.ob[data-ob="0"] h1{font-size:clamp(2.7rem,13vw,3.8rem);letter-spacing:-.025em;margin-bottom:.8rem}
+
+input[type=text],textarea{
+  width:100%;font:inherit;color:inherit;background:var(--shell);
+  border:1.5px solid var(--line);border-radius:var(--r);padding:.8rem .95rem;margin-bottom:1rem;
+  transition:border-color .15s,box-shadow .2s;
+}
+input[type=text]:focus,textarea:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 4px color-mix(in srgb,var(--teal) 20%,transparent)}
+textarea{resize:vertical;min-height:74px}
+label.fld{display:block;font-weight:700;margin-bottom:.35rem;font-size:.95rem}
+
+/* ---------- floating tab bar ---------- */
+.tabs{
+  position:fixed;z-index:40;display:flex;
+  left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));
+  bottom:calc(12px + env(safe-area-inset-bottom,0px));
+  max-width:600px;margin:0 auto;padding:6px;
+  background:color-mix(in srgb,var(--shell) 94%,transparent);
+  border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow-lift);
+}
+.tabs .ind{
+  position:absolute;top:6px;bottom:6px;left:6px;width:calc((100% - 12px)/5);border-radius:18px;
+  background:var(--teal-soft);transform:translateX(calc(var(--i,0)*100%));
+  transition:transform .4s cubic-bezier(.3,.8,.3,1);
+}
+.tabs.noind .ind{display:none}
+.tabs button{
+  position:relative;z-index:1;flex:1;min-width:0;background:none;border:none;border-radius:18px;
+  padding:.55rem .1rem .5rem;display:grid;justify-items:center;gap:.15rem;
+  font-size:.75rem;color:var(--ink-soft);transition:color .2s;
+}
+.tabs button svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tabs button[aria-current="page"]{color:var(--teal-ink);font-weight:700}
+.tabs.hide{display:none}
+
+/* ---------- tasks ---------- */
+.task{display:flex;align-items:flex-start;gap:.9rem;padding:.8rem 0;border-bottom:1px solid var(--line)}
+.task:last-child{border-bottom:none}
+.tick{
+  flex:0 0 auto;width:32px;height:32px;border:1.5px solid var(--line);
+  background:var(--shell);border-radius:10px;padding:0;display:grid;place-items:center;
+  transition:background .25s,border-color .25s,transform .15s;
+}
+.tick:active{transform:scale(.9)}
+.tick svg{width:20px;height:20px;fill:none;stroke:var(--on-moss);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.tick svg path{stroke-dasharray:24;stroke-dashoffset:24;transition:stroke-dashoffset .35s ease .05s}
+.tick[aria-pressed="true"]{background:var(--moss-deep);border-color:var(--moss-deep)}
+.tick[aria-pressed="true"] svg path{stroke-dashoffset:0}
+.task.done .task-name{color:var(--ink-soft);text-decoration:line-through}
+.task-name{flex:1;padding-top:.15rem}
+.steps{margin:.4rem 0 0 0;padding-left:1.1rem;color:var(--ink-soft);font-size:.92rem}
+
+/* ---------- overload log ---------- */
+.mini{padding:.4rem .8rem;font-size:.85rem}
+.bar{position:relative;height:36px;border-radius:10px;background:var(--shell);border:1px solid var(--line);margin-bottom:.45rem;overflow:hidden}
+.bar i{position:absolute;top:0;bottom:0;left:0;background:var(--teal-soft);transform-origin:left;animation:grow .8s cubic-bezier(.3,.8,.3,1) backwards}
+@keyframes grow{from{transform:scaleX(0)}}
+.bar .l{position:relative;display:flex;justify-content:space-between;gap:1rem;padding:.35rem .7rem;font-size:.9rem}
+.logrow{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start;padding:.7rem 0;border-bottom:1px solid var(--line)}
+.logrow:last-child{border-bottom:none}
+
+/* ---------- message bubble (notify preview) ---------- */
+.bub{display:inline-block;background:var(--shell);border:1.5px solid var(--line);border-radius:var(--r);padding:.65rem .9rem;text-align:left}
+
+/* ---------- support links ---------- */
+.res{
+  position:relative;display:block;background:var(--shell);border:1px solid var(--line);border-radius:var(--r);
+  padding:.8rem 2.6rem .8rem 1.05rem;margin-bottom:.55rem;text-decoration:none;color:inherit;text-align:left;width:100%;
+  box-shadow:var(--shadow);transition:border-color .15s,transform .15s,box-shadow .2s;
+}
+.res::after{
+  content:"";position:absolute;right:1.1rem;top:50%;width:8px;height:8px;margin-top:-4px;
+  border-right:2px solid var(--ink-soft);border-top:2px solid var(--ink-soft);transform:rotate(45deg);
+}
+.res.static::after{display:none}
+a.res:hover,button.res:hover{border-color:var(--teal);box-shadow:var(--shadow-lift);transform:translateY(-1px)}
+.res b{display:block;font-family:var(--f-display);font-size:1.05rem}
+.res span{font-size:.88rem;color:var(--ink-soft)}
+
+/* ---------- overlays ---------- */
+#crisis{
+  position:fixed;inset:0;background:var(--paper);z-index:100;overflow-y:auto;display:none;
+  padding:calc(2rem + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(3rem + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));
+}
+#crisis.on{display:block}
+#crisis .inner{max-width:520px;margin:0 auto}
+#crisis h1:focus{outline:none}
+
+#drawpad{
+  position:fixed;inset:0;background:var(--paper);z-index:90;display:none;flex-direction:column;
+  padding:calc(14px + env(safe-area-inset-top,0px)) max(14px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));
+}
+#drawpad.on{display:flex}
+.pad-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;margin-bottom:.7rem}
+#pad{
+  flex:1;width:100%;min-height:0;background:var(--shell);border:1.5px solid var(--line);
+  border-radius:var(--r);touch-action:none;cursor:crosshair;display:block;
+}
+#pad-note{margin:.6rem 0 0;text-align:center}
+
+#focus{
+  position:fixed;inset:0;z-index:95;background:var(--paper);display:none;flex-direction:column;
+  padding:calc(14px + env(safe-area-inset-top,0px)) max(20px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));
+  overflow-y:auto;
+}
+#focus.on{display:flex}
+#focus::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(60vmax 60vmax at 50% 40%,color-mix(in srgb,var(--teal-soft) 80%,transparent),transparent)}
+.focus-top{display:flex;justify-content:flex-end}
+#focus-body{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.1rem;
+  text-align:center;width:100%;max-width:520px;margin:0 auto;padding:1rem 0;
+}
+#focus-body>*{margin-top:0;margin-bottom:0}
+.f-title{font-family:var(--f-display);font-size:1.6rem;margin:0;color:var(--teal-ink)}
+.bigsay{font-family:var(--f-display);font-size:clamp(1.8rem,7.4vw,3rem);line-height:1.2;font-weight:700;text-wrap:balance;max-width:20ch;margin:0}
+.breath-stage{position:relative;display:grid;place-items:center;width:min(72vw,290px);aspect-ratio:1;max-width:100%}
+.breath-orb{
+  position:absolute;inset:0;border-radius:50%;transform:scale(.55);
+  background:radial-gradient(circle at 35% 30%,var(--teal),var(--teal-deep));
+  box-shadow:0 0 60px color-mix(in srgb,var(--teal) 40%,transparent);
+}
+.breath-word{position:relative;font-family:var(--f-display);font-weight:700;font-size:1.5rem;color:var(--on-teal)}
+.dots{display:flex;gap:.9rem;flex-wrap:wrap;justify-content:center;margin:.4rem 0 .8rem}
+.dot{
+  width:60px;height:60px;border-radius:50%;border:2px solid var(--line);background:var(--shell);padding:0;
+  box-shadow:var(--shadow);transition:background .3s,border-color .3s,transform .2s;
+}
+.dot[aria-pressed="true"]{background:var(--moss);border-color:var(--moss-deep);transform:scale(.9)}
+
+.theme-btn{
+  position:fixed;z-index:41;top:calc(10px + env(safe-area-inset-top,0px));right:max(14px,env(safe-area-inset-right,0px));
+  width:42px;height:42px;border-radius:50%;padding:0;display:grid;place-items:center;
+  background:var(--shell);border:1px solid var(--line);box-shadow:var(--shadow);color:var(--ink);
+  transition:transform .15s,border-color .15s;
+}
+.theme-btn:hover{border-color:var(--teal)}
+.theme-btn:active{transform:scale(.92)}
+.theme-btn svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.hr{height:1px;background:var(--line);border:none;margin:2rem 0}
+.hidden{display:none!important}
+</style>
+
+<div id="ambient" data-state="baseline" aria-hidden="true"></div>
+<div id="dimmer" aria-hidden="true"></div>
+
+<button class="theme-btn" id="theme-btn" aria-label="Colour theme"></button>
+<div class="wrap">
+
+<!-- ============ ONBOARDING ============ -->
+<section id="s-onboard" class="screen on">
+  <div class="prog"><span id="prog-txt">Step 1 of 7</span><span class="prog-bar"><span class="prog-fill" id="prog-fill"></span></span></div>
+
+  <div class="ob on" data-ob="0">
+    <div class="hero" id="hero" aria-hidden="true"><svg viewBox="0 -10 640 220"><g fill="none" stroke-linecap="round" stroke-width="20"><path pathLength="1" style="--c:var(--moss);--k:-1;--n:0" d="M-10 52C110 -4 210 108 330 54S550 -2 650 52"/><path pathLength="1" style="--c:var(--teal);--k:-0.5;--n:1" d="M-10 82C110 26 210 138 330 84S550 28 650 82"/><path pathLength="1" style="--c:var(--dusk);--k:0;--n:2" d="M-10 112C110 56 210 168 330 114S550 58 650 112"/><path pathLength="1" style="--c:var(--iris);--k:0.5;--n:3" d="M-10 142C110 86 210 198 330 144S550 88 650 142"/><path pathLength="1" style="--c:var(--amber);--k:1;--n:4" d="M-10 172C110 116 210 228 330 174S550 118 650 172"/></g></svg></div>
+    <h1>Spectrum</h1>
+    <p>This app learns how you work, then adapts to it. Nothing here is about changing you.</p>
+    <p>Setup takes about two minutes. You can skip any question and change all of it later.</p>
+    <p class="tiny">Everything you enter stays on this device. It is never uploaded anywhere.</p>
+    <button class="btn wide" data-next>Start setup</button>
+  </div>
+
+  <div class="ob" data-ob="1">
+    <h1>What should the app call you?</h1>
+    <p class="sub">Optional. A nickname is fine.</p>
+    <input type="text" id="f-name" placeholder="Leave blank if you'd rather not">
+    <label class="fld">How old are you?</label>
+    <div class="choices" id="f-age"></div>
+    <button class="btn wide" data-next>Continue</button>
+  </div>
+
+  <div class="ob" data-ob="2">
+    <h1>What gets to you most?</h1>
+    <p class="sub">Pick anything that applies. This changes what the app warns you about.</p>
+    <div class="choices" data-multi="sensory"></div>
+    <button class="btn wide" data-next>Continue</button>
+  </div>
+
+  <div class="ob" data-ob="3">
+    <h1>When it's already too much, what actually helps?</h1>
+    <p class="sub">Not what people tell you should help. What works.</p>
+    <div class="choices" data-multi="helps"></div>
+    <button class="btn wide" data-next>Continue</button>
+  </div>
+
+  <div class="ob" data-ob="4">
+    <h1>Which parts of a school day are hard?</h1>
+    <p class="sub">The app will put your plan in front of you before these, not during.</p>
+    <div class="choices" data-multi="hard"></div>
+    <label class="fld">Does talking get harder when you're stressed?</label>
+    <div class="choices" data-single="speech"></div>
+    <button class="btn wide" data-next>Continue</button>
+  </div>
+
+  <div class="ob" data-ob="5">
+    <h1>One person you'd contact if things got bad</h1>
+    <p class="sub">Their name sits at the top of the support screen so you don't have to think of someone while you're struggling.</p>
+    <label class="fld">Name</label>
+    <input type="text" id="f-person" placeholder="e.g. Mum, Sara, Mr Haddad">
+    <label class="fld">How you'd reach them</label>
+    <input type="text" id="f-contact" placeholder="Phone number or just 'in person'">
+    <div class="panel attn">
+      <p style="margin:0"><b>This build is a demo.</b> Nothing is ever actually sent to this person. Any message you see is a preview shown only to you, on this device.</p>
+    </div>
+    <button class="btn wide" data-next>Continue</button>
+  </div>
+
+  <div class="ob" data-ob="6">
+    <h1>How should the app look and behave?</h1>
+    <div class="choices" data-multi="ui"></div>
+    <label class="fld">Anything you're really into?</label>
+    <p class="tiny" style="margin-bottom:.5rem">Used to make examples make sense to you. Optional.</p>
+    <input type="text" id="f-interests" placeholder="e.g. marine biology, Formula 1, drawing">
+    <button class="btn wide" data-next>Finish setup</button>
+  </div>
+</section>
+
+<!-- ============ CHECK-IN ============ -->
+<section id="s-checkin" class="screen">
+  <h1 id="greet">How are you doing?</h1>
+  <p class="sub">Two taps. No wrong answers.</p>
+
+  <div class="orb-wrap">
+    <div class="orb" id="orb" aria-hidden="true"></div>
+    <p class="orb-cap" id="orb-cap" aria-live="polite">Tap below. The circle follows you.</p>
+  </div>
+
+  <h3 style="margin-top:1.6rem">Energy</h3>
+  <div class="scale" id="sc-energy"></div>
+  <div class="scale-ends"><span>Running on empty</span><span>Full</span></div>
+
+  <h3>How much is weighing on you right now?</h3>
+  <div class="scale" id="sc-load"></div>
+  <div class="scale-ends"><span>Barely there</span><span>Too much</span></div>
+
+  <div class="choices" style="margin-top:1.4rem">
+    <button class="chip" id="dunno" aria-pressed="false">I don't know how I feel</button>
+  </div>
+
+  <button class="btn wide" id="checkin-go" disabled>Done</button>
+  <p class="tiny" style="margin-top:1rem"><button class="btn ghost" id="skip-checkin" style="padding:.4rem .8rem;font-size:.85rem">Skip this</button></p>
+</section>
+
+<!-- ============ TODAY ============ -->
+<section id="s-today" class="screen">
+  <h1 id="today-head">Today</h1>
+  <p class="sub" id="today-read"></p>
+
+  <div class="panel mark" id="today-advice"></div>
+
+  <h2>Coming up that you flagged</h2>
+  <div id="flagged"></div>
+
+  <h2>Things to get through</h2>
+  <div class="panel" id="tasks"></div>
+  <p class="tiny">Nothing here counts against you. Undone is just undone.</p>
+</section>
+
+<!-- ============ REGULATE ============ -->
+<section id="s-regulate" class="screen">
+  <h1>Ground yourself</h1>
+  <p class="sub" id="reg-sub"></p>
+
+  <h2>Your own list</h2>
+  <div id="own-tools"></div>
+
+  <h2>Something to do</h2>
+  <p class="tiny" style="margin-top:-.5rem">One suggestion at a time — no list to choose from.</p>
+  <div id="std-tools"></div>
+
+  <div id="tool-open" class="panel hidden" style="margin-top:1rem"></div>
+
+  <hr class="hr">
+
+  <h2>If this is more than a hard day</h2>
+  <p class="tiny" style="margin-bottom:1rem">You don't have to explain anything. This shows who you can contact.</p>
+  <button class="btn wide" id="help-now">Show me who can help</button>
+
+  <hr class="hr">
+
+  <h2>After it passes</h2>
+  <p class="tiny" style="margin-bottom:1rem">Optional. Noting what it was can show patterns over time. It stays on this device.</p>
+  <div id="log-box"></div>
+</section>
+
+<!-- ============ SAY IT ============ -->
+<section id="s-scripts" class="screen">
+  <h1>Say it</h1>
+  <p class="sub">Wording for the conversations that are hard to improvise. Copy it, change it, or read it off the screen.</p>
+  <div id="script-cats"></div>
+  <div id="script-list"></div>
+</section>
+
+<!-- ============ YOU ============ -->
+<section id="s-you" class="screen">
+  <h1>You</h1>
+  <p class="sub">Everything the app knows. Change any of it.</p>
+  <div class="panel" id="profile-dump"></div>
+
+  <h2>Your overload log</h2>
+  <div id="log-view"></div>
+
+  <h2>Appearance</h2>
+  <p class="tiny" style="margin-bottom:.8rem">Auto follows your device. Light and dark stay as you set them.</p>
+  <div class="choices" id="theme-choices"></div>
+
+  <h2>Your data</h2>
+  <p>It lives on this device only. Save a copy if you want it somewhere else.</p>
+  <div class="choices">
+    <button class="chip" id="export">Save a copy</button>
+    <button class="chip" id="redo">Redo setup</button>
+  </div>
+
+  <h2>Support</h2>
+  <div id="you-support"></div>
+
+  <hr class="hr">
+  <p class="tiny">Spectrum is a concept build. It is not a medical device and gives no medical advice. If you are struggling with your mental health, tell someone you trust or contact a crisis service.</p>
+</section>
+
+</div>
+
+<nav class="tabs hide" id="tabs" aria-label="Main">
+  <span class="ind" aria-hidden="true"></span>
+  <button data-go="s-checkin"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 15a8 8 0 0116 0"/><path d="M12 15l3.6-4.6"/></svg><span>Check in</span></button>
+  <button data-go="s-today"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.6"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/></svg><span>Today</span></button>
+  <button data-go="s-regulate"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9c3-3 6 3 9 0s6 3 9 0"/><path d="M3 15c3-3 6 3 9 0s6 3 9 0"/></svg><span>Ground</span></button>
+  <button data-go="s-scripts"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v10H10l-4 3.5V16H4z"/></svg><span>Say it</span></button>
+  <button data-go="s-you"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.5"/><path d="M5 20c0-4 3-6 7-6s7 2 7 6"/></svg><span>You</span></button>
+</nav>
+
+<!-- ============ GUIDED EXERCISES ============ -->
+<div id="focus" role="dialog" aria-modal="true" aria-label="Exercise">
+  <div class="focus-top"><button class="btn ghost" id="focus-close" style="padding:.5rem .9rem">Close</button></div>
+  <div id="focus-body"></div>
+</div>
+
+<!-- ============ DRAW / TRACE ============ -->
+<div id="drawpad" role="dialog" aria-modal="true" aria-label="Drawing and tracing">
+  <div class="pad-top">
+    <div class="choices" id="pad-modes" style="margin:0"></div>
+    <div style="display:flex;gap:.5rem">
+      <button class="btn ghost" id="pad-clear" style="padding:.5rem .9rem">Clear</button>
+      <button class="btn ghost" id="pad-close" style="padding:.5rem .9rem">Close</button>
+    </div>
+  </div>
+  <canvas id="pad"></canvas>
+  <p class="tiny" id="pad-note"></p>
+</div>
+
+<!-- ============ CRISIS OVERLAY ============ -->
+<div id="crisis" role="dialog" aria-modal="true" aria-labelledby="crisis-h">
+  <div class="inner">
+    <h1 id="crisis-h" tabindex="-1">Here is who can help.</h1>
+    <p>You don't have to explain anything. Pick whichever is easiest.</p>
+    <div id="crisis-person"></div>
+    <h2>If you'd rather not talk to someone you know</h2>
+    <div id="crisis-lines"></div>
+    <h2>If you are in danger right now</h2>
+    <a class="res" href="tel:999"><b>Call the police</b><span>999 · anywhere in the UAE, 24/7</span></a>
+    <a class="res" href="tel:998"><b>Call an ambulance</b><span>998 · medical emergencies, anywhere in the UAE, 24/7</span></a>
+    <hr class="hr">
+    <button class="btn ghost wide" id="crisis-back">Go back</button>
+    <p class="tiny" style="margin-top:1rem">These options stay available from the You screen at any time.</p>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   CONFIG
+   ------------------------------------------------------------
+   Everything in this app runs on the device. There is no server
+   call and no API key.
+   ============================================================ */
+const CONFIG = {
+  /* UAE numbers only. Checked 21 Oct 2026 against: Department of Health
+     Abu Dhabi (800 SAKINA), Abu Dhabi Department of Community Development
+     (Istijaba), the 800 HOPE service site (hope.hw.gov.ae) and u.ae
+     (999 / 998). Hours change, so re-check before every release. */
+  REGION: "AE",
+  CRISIS_LINES: {
+    AE: [
+      { name: "800 SAKINA", detail: "800 725462 · Abu Dhabi · open 24/7 · Arabic and English · includes support for children and families", href: "tel:800725462" },
+      { name: "800 HOPE", detail: "800 4673 · UAE residents · about 8 am to 8 pm daily, different hours in Ramadan · you can also message it on WhatsApp", href: "tel:8004673" },
+      { name: "Estijaba (Istijaba)", detail: "800 1717 · Abu Dhabi · mental health support from licensed specialists · hours may be limited", href: "tel:8001717" }
+    ]
+  },
+  LINES_NOTE: "These are phone calls, and 800 HOPE also takes WhatsApp messages. If speaking on the phone is not something you can do, tell the person you picked instead, or write to them. Writing counts."
+};
+
+/* ============================================================
+   STORAGE — localStorage where allowed, memory otherwise.
+   Never fails, never blocks the app.
+   ============================================================ */
+const Store = (()=>{
+  let mem = {};
+  let ok = true;
+  try { localStorage.setItem("__t","1"); localStorage.removeItem("__t"); } catch(e){ ok = false; }
+  return {
+    get(k,d){ try{ const v = ok ? localStorage.getItem(k) : mem[k]; return v ? JSON.parse(v) : d; }catch(e){ return d; } },
+    set(k,v){ const s = JSON.stringify(v); if(ok){ try{ localStorage.setItem(k,s); }catch(e){ mem[k]=s; } } else mem[k]=s; },
+    del(k){ if(ok){ try{ localStorage.removeItem(k); }catch(e){} } delete mem[k]; }
+  };
+})();
+
+/* ============================================================
+   OPTION DATA
+   ============================================================ */
+const OPTS = {
+  age:      ["12","13","14","15","16","17","18"],
+  sensory:  ["Loud or layered noise","Bright or flickering light","Crowds and being close to people","Being touched unexpectedly","Strong smells","Certain textures","Sudden changes to plans","Too many things at once"],
+  helps:    ["Quiet, no talking","Being on my own","Someone nearby, not talking","Moving or walking","Pressure — heavy blanket, tight hug","Music or one song on repeat","Something to fiddle with","Cold water or fresh air","Dark or dim light","A screen and nothing else"],
+  hard:     ["Assembly","Canteen at lunch","PE and changing rooms","Group work","Corridors between lessons","Being called on in class","Substitute teachers","Fire drills","Break time","The bus or drop-off"],
+  speech:   ["No, I'm fine talking","Sometimes it gets harder","Yes, I often can't talk when stressed"],
+  ui:       ["Reduce movement on screen","No emoji","Keep the screen dim","Short sentences only"]
+};
+
+const TOOLS = {
+  "Quiet, no talking":       ["Nothing to do here","This screen will stay still. Nothing will move, make a sound, or ask you anything. Come back when you want to."],
+  "Being on my own":         ["Alone is a valid plan","Somewhere you can be by yourself, if you have one: the library, an empty classroom, outside, a bathroom cubicle. You don't need to justify going."],
+  "Someone nearby, not talking":["Sitting near someone","You can ask for this without a conversation. Something like: \"Can I just sit here for a bit? I don't want to talk.\" Most people are fine with it."],
+  "Moving or walking":       ["Move","Walk a lap. Stairs. Push against a wall for ten seconds and let go. Shake your hands out. Movement burns off the physical part of it."],
+  "Pressure — heavy blanket, tight hug":["Pressure","Press your palms together hard and hold. Push down on your own thighs. Wrap your arms round yourself and squeeze. A bag on your lap works too."],
+  "Music or one song on repeat":["The song","The one that always works. On repeat is fine. It's not avoidance, it's a known input replacing an unpredictable one."],
+  "Something to fiddle with": ["Hands busy","Whatever you use. If it isn't on you: a pen, a hair tie, a seam, a zip. Repetitive movement is regulating and you don't owe anyone an explanation for it."],
+  "Cold water or fresh air":  ["Cold and air","Cold water on your wrists or the back of your neck. Outside if you can get there. It resets the physical response fairly reliably."],
+  "Dark or dim light":        ["Less light","Turn the brightness down. Hood up. Eyes closed. Cutting one input channel makes the others easier."],
+  "A screen and nothing else":["One thing only","Something you've seen before, that you know the shape of. Predictable input is doing a job right now."]
+};
+
+/* A wide pool so the bot never circles the same three ideas.
+   `screen` opens an in-app surface instead of just describing a thing. */
+const TOOLBOX = [
+  {id:"trace", t:"Trace a pattern", d:"Follow a line with your finger. Repetitive, predictable, no thinking required. Opens on screen.", screen:"draw"},
+  {id:"draw",  t:"Draw something", d:"Not to make anything good. The hand movement is the point. Opens on screen.", screen:"draw"},
+  {id:"breath",screen:"breath",t:"Slow the breath out", d:"Not deep breathing. Just make the out-breath longer than the in. In for four, out for six, six rounds. Stop if counting makes it worse. Opens on screen."},
+  {id:"five", screen:"five",  t:"Name five things", d:"Five you can see, four you can touch, three you can hear. It works by loading your attention with something boring. Opens on screen."},
+  {id:"sit",   screen:"sit", t:"Sit here", d:"No exercise, no prompt. The screen stays as it is. There is nothing to do and nothing to finish. Opens on screen."},
+  {id:"which", t:"Work out which one this is", d:"Overloaded and about to blow, shut down and gone quiet, or worried about one specific thing? They need opposite things and knowing which helps."},
+  {id:"count", t:"Count backwards oddly", d:"From 200 in sevens. From 100 in threes. It has to be hard enough to need your attention and boring enough to be no threat."},
+  {id:"recite",t:"Recite something you know", d:"Lyrics, lines, the periodic table, a route, a squad list. Known sequences are regulating because nothing in them can surprise you."},
+  {id:"dump",  t:"Say too much about the thing you like", d:"Out loud or typed here. Talking at length about your subject is regulating, and you don't have to apologise for it or edit it down."},
+  {id:"order", t:"Put something in order", d:"A shelf, a playlist, your camera roll, cards, pens by colour. Imposing order on a small object when nothing else is orderly."},
+  {id:"copy",  t:"Copy out text by hand", d:"Any text. A page of a book, lyrics, a paragraph off a bottle. Handwriting is slow, physical and has one obvious right answer."},
+  {id:"press", t:"Push against something", d:"Palms together hard for ten seconds, then let go. Push a wall. Press down on your own legs. Force through the muscles, not just movement."},
+  {id:"rock",  t:"Rock, tap, or flap", d:"Whatever your body wants to do. It is doing a job. You do not need to sit still and you don't owe anyone stillness."},
+  {id:"less",  t:"Take away inputs instead of adding one", d:"Hood up. Eyes shut. Ear defenders or one earbud. Brightness down. Cutting one channel makes the rest survivable."},
+  {id:"sour",  t:"Something with a strong taste or texture", d:"Sour, mint, crunchy, fizzy. A sharp predictable sensation gives your attention somewhere definite to go."},
+  {id:"known", t:"Rewatch something you've seen before", d:"The episode you know line for line. Predictable input is doing real work right now. It is not avoidance."},
+  {id:"write", t:"Write it down instead of thinking it", d:"Thoughts loop in your head and stop looping on paper. It doesn't have to make sense or be readable."},
+  {id:"defer", t:"Decide nothing for twenty minutes", d:"You are allowed to not answer, not choose, and not fix anything yet. Deciding costs more than doing when you're like this."},
+  {id:"water", t:"Cold water or fresh air", d:"On your wrists or the back of your neck, or step outside. Reliable, but it stops working if it's the only thing you ever reach for."},
+  {id:"single",t:"One song, on repeat", d:"The one that always works. Repeat is fine. A known input replacing an unpredictable one."},
+  {id:"hands", t:"Something in your hands", d:"A pen, a hair tie, a seam, a zip, a coin. Repetitive movement in the fingers, no explanation owed to anyone."},
+  {id:"weight",t:"Weight on you", d:"A bag on your lap, a coat over your shoulders, arms wrapped round yourself and squeezing. Pressure settles the body faster than talking does."}
+];
+
+const SCRIPTS = {
+  "Asking a teacher for something": [
+    "I'm finding it hard to focus in here. Could I work somewhere quieter for this task?",
+    "I need to step out for a few minutes. I'll come straight back.",
+    "Could you write the instructions down for me? I lose them when they're spoken.",
+    "Is there a version of this I can do without presenting to the class?",
+    "I'm not being difficult. This is a sensory thing and I'm trying to manage it."
+  ],
+  "When you can't talk": [
+    "Showing a teacher a card or your phone screen counts as communicating. It is not rude.",
+    "I can't speak right now. I'm not upset with you.",
+    "Give me a minute and I'll write it down.",
+    "Yes / no questions only for now, please."
+  ],
+  "Explaining afterwards": [
+    "What happened earlier was sensory overload. I wasn't being rude and I wasn't having a tantrum.",
+    "I couldn't process what you were asking at the time. I can now.",
+    "I need a bit of warning before things change. It's not about being awkward.",
+    "I'm not going to be able to explain this well. Can I send it to you in writing?"
+  ],
+  "Social": [
+    "I can't do tonight, I'm out of social battery. Not about you.",
+    "I'd rather do something quieter — can we do that instead?",
+    "I'm going to head off now. I've had a good time, I've just hit my limit.",
+    "I don't really get what you mean — can you say it straight?"
+  ],
+  "Substitute teacher": [
+    "I have an arrangement with Mr/Ms ___ that I can leave the room if I need to. You can check with them.",
+    "I usually sit here. It's not me being awkward, it's part of my plan.",
+    "There should be a note about me. If there isn't, I can explain quickly."
+  ]
+};
+
+/* ============================================================
+   PROFILE + STATE
+   ============================================================ */
+let P = Store.get("spectrum.profile", null);
+let day = Store.get("spectrum.day", null);
+
+function saveP(){ Store.set("spectrum.profile", P); }
+function saveDay(){ Store.set("spectrum.day", day); }
+function todayKey(){
+  const d = new Date(), p = n => String(n).padStart(2,"0");
+  return d.getFullYear() + "-" + p(d.getMonth()+1) + "-" + p(d.getDate());
+}
+
+/* ============================================================
+   CRISIS SCREEN — opened by the person, from the Ground screen.
+   ============================================================ */
+let crisisReturn = null;
+function fireCrisis(){
+  crisisReturn = document.activeElement;
+  buildCrisis();
+  document.getElementById("crisis").classList.add("on");
+  document.body.style.overflow = "hidden";
+  document.getElementById("crisis-h").focus();
+}
+function closeCrisis(){
+  document.getElementById("crisis").classList.remove("on");
+  document.body.style.overflow = "";
+  if(crisisReturn && crisisReturn.isConnected) crisisReturn.focus();
+}
+document.getElementById("crisis-back").onclick = closeCrisis;
+
+function resHTML(name, detail, href){
+  const inner = `<b>${esc(name)}</b><span>${esc(detail)}</span>`;
+  return href ? `<a class="res" href="${esc(href)}">${inner}</a>` : `<div class="res static">${inner}</div>`;
+}
+function linesHTML(){
+  const home = CONFIG.REGION;
+  let out = CONFIG.CRISIS_LINES[home].map(l=>resHTML(l.name,l.detail,l.href)).join("");
+  out += `<p class="tiny" style="margin:.2rem 0 1rem">${CONFIG.LINES_NOTE}</p>`;
+  return out;
+}
+function buildCrisis(){
+  const box = document.getElementById("crisis-person");
+  if(P && P.person){
+    box.innerHTML = `<h2>Someone you picked</h2>` +
+      resHTML(P.person, P.contact ? P.contact : "You chose this person during setup",
+              /^[\d+ ()-]+$/.test(P.contact||"") ? "tel:"+(P.contact||"").replace(/[^\d+]/g,"") : "") +
+      `<button class="res" id="notify-open"><b>Let ${esc(P.person)} know without talking</b><span>You choose the words and what they're told</span></button>
+       <div id="notify-panel" class="hidden"></div>`;
+    document.getElementById("notify-open").onclick = openNotify;
+  } else box.innerHTML = "";
+  document.getElementById("crisis-lines").innerHTML = linesHTML();
+}
+
+/* Simulated notification. Nothing is transmitted. The user writes it,
+   the user decides what is included, and the user sends it. The app
+   never messages anyone on its own — see safety spec 6.3. */
+function openNotify(){
+  const el = document.getElementById("notify-panel");
+  el.classList.remove("hidden");
+  const who = esc(P.person);
+  el.innerHTML = `
+    <div class="panel attn" style="margin-top:.6rem">
+      <p style="margin:0 0 .6rem"><b>Demo only.</b> Nothing is sent. This shows what the message would look like, on your screen, and then stops.</p>
+      <label class="fld">What ${who} would see</label>
+      <textarea id="notify-body" rows="4">I'm not doing well and I didn't want to say it out loud. Can you check on me?</textarea>
+      <label class="fld">Include as well</label>
+      <div class="choices" id="notify-extras">
+        <button class="chip" data-x="checkin" aria-pressed="false">How today has been</button>
+        <button class="chip" data-x="helps" aria-pressed="false">What helps me</button>
+        <button class="chip" data-x="talk" aria-pressed="false">That I can't talk right now</button>
+      </div>
+      <div id="notify-preview" class="tiny"></div>
+      <button class="btn wide" id="notify-send">Send to ${who}</button>
+      <button class="btn ghost wide" id="notify-cancel" style="margin-top:.5rem">Not now</button>
+    </div>`;
+
+  const extras = new Set();
+  el.querySelectorAll("[data-x]").forEach(b=>{
+    b.onclick = ()=>{
+      const k = b.dataset.x;
+      extras.has(k) ? extras.delete(k) : extras.add(k);
+      b.setAttribute("aria-pressed", extras.has(k));
+      drawPreview();
+    };
+  });
+  function extraLines(){
+    const out = [];
+    if(extras.has("checkin") && day) out.push(`Energy ${day.energy} out of 5, and it's all pressing on me at ${day.load} out of 5.`);
+    if(extras.has("helps") && (P.helps||[]).length) out.push(`What helps me: ${P.helps.slice(0,3).join(", ").toLowerCase()}.`);
+    if(extras.has("talk")) out.push(`I might not be able to talk. Writing is easier.`);
+    return out;
+  }
+  function drawPreview(){
+    const ex = extraLines();
+    document.getElementById("notify-preview").innerHTML = ex.length
+      ? `<p style="margin:.2rem 0 1rem"><b>Also included:</b><br>${ex.join("<br>")}</p>` : "";
+  }
+  drawPreview();
+
+  document.getElementById("notify-cancel").onclick = ()=>{ el.classList.add("hidden"); el.innerHTML=""; };
+  document.getElementById("notify-send").onclick = ()=>{
+    const full = [document.getElementById("notify-body").value.trim(), ...extraLines()].filter(Boolean).join("\n");
+    el.innerHTML = `
+      <div class="panel mark" style="margin-top:.6rem">
+        <p style="margin:0 0 .6rem"><b>In a real build, this would now be with ${who}.</b></p>
+        <div class="bub" style="white-space:pre-wrap;margin-bottom:.7rem">${full.replace(/[<>]/g,"")}</div>
+        <p class="tiny" style="margin:0">Demo build — nothing left this device and no message was sent. ${P.contact ? "It would have gone to: " + P.contact.replace(/[<>]/g,"") : "No contact details were entered during setup."}</p>
+      </div>`;
+  };
+}
+
+/* ============================================================
+   STATE INFERENCE
+   ============================================================ */
+function stateFrom(energy, load, unknown){
+  if(load >= 4 && energy <= 2) return "shutdown";
+  if(load >= 4) return "meltdown";
+  if(load === 3 || unknown) return "anxious";
+  return "baseline";
+}
+function inferState(){
+  if(!day || day.date !== todayKey()) return "baseline"; // yesterday's check-in shouldn't set today's mode
+  return stateFrom(day.energy, day.load, day.unknown);
+}
+
+/* ============================================================
+   ONBOARDING
+   ============================================================ */
+let step = 0;
+const draft = { age:null, sensory:[], helps:[], hard:[], speech:null, ui:[] };
+
+function chipRow(el, list, key, multi){
+  el.innerHTML = "";
+  list.forEach(v=>{
+    const b = document.createElement("button");
+    b.className = "chip"; b.textContent = v; b.setAttribute("aria-pressed","false");
+    b.onclick = ()=>{
+      if(multi){
+        const arr = draft[key];
+        const i = arr.indexOf(v);
+        if(i>=0) arr.splice(i,1); else arr.push(v);
+        b.setAttribute("aria-pressed", arr.includes(v));
+      } else {
+        draft[key] = v;
+        [...el.children].forEach(c=>c.setAttribute("aria-pressed", c.textContent===v));
+      }
+    };
+    el.appendChild(b);
+  });
+}
+chipRow(document.getElementById("f-age"), OPTS.age, "age", false);
+document.querySelectorAll("[data-multi]").forEach(el=>{
+  const k = el.dataset.multi;
+  if(OPTS[k]) chipRow(el, OPTS[k], k, true);
+});
+document.querySelectorAll("[data-single]").forEach(el=>{
+  const k = el.dataset.single;
+  if(OPTS[k]) chipRow(el, OPTS[k], k, false);
+});
+
+function showStep(n){
+  document.querySelectorAll(".ob").forEach(o=>o.classList.toggle("on", +o.dataset.ob===n));
+  document.querySelectorAll(".ob").forEach(o=>o.style.display = (+o.dataset.ob===n?"block":"none"));
+  document.getElementById("prog-txt").textContent = `Step ${n+1} of 7`;
+  document.getElementById("prog-fill").style.width = ((n+1)/7*100)+"%";
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("[data-next]").forEach(b=>{
+  b.onclick = ()=>{
+    if(step === 6) return finishSetup();
+    step++; showStep(step);
+  };
+});
+
+function finishSetup(){
+  P = {
+    name: document.getElementById("f-name").value.trim(),
+    age: draft.age,
+    sensory: draft.sensory,
+    helps: draft.helps,
+    hard: draft.hard,
+    speech: draft.speech,
+    ui: draft.ui,
+    person: document.getElementById("f-person").value.trim(),
+    contact: document.getElementById("f-contact").value.trim(),
+    interests: document.getElementById("f-interests").value.trim()
+  };
+  saveP(); applyUI(); go("s-checkin");
+  document.getElementById("tabs").classList.remove("hide");
+}
+
+function applyUI(){
+  const ui = (P && P.ui) || [];
+  document.body.classList.toggle("no-motion", ui.includes("Reduce movement on screen"));
+  document.body.classList.toggle("dim", ui.includes("Keep the screen dim"));
+}
+
+/* ============================================================
+   CHECK-IN
+   ============================================================ */
+function buildScale(id, key){
+  const el = document.getElementById(id);
+  el.innerHTML = "";
+  for(let i=1;i<=5;i++){
+    const b = document.createElement("button");
+    b.className = "seg"; b.style.setProperty("--h", (46 + (i-1)*12) + "px");
+    b.setAttribute("aria-label", `${key}, ${i} out of 5`);
+    b.onclick = ()=>{
+      pending[key] = i;
+      [...el.children].forEach((c,ix)=>{
+        c.classList.toggle("fill", ix < i);
+        c.classList.toggle("warm", key==="load" && ix < i && i>=4);
+      });
+      document.getElementById("checkin-go").disabled = !(pending.energy && pending.load);
+      updateOrb();
+    };
+    el.appendChild(b);
+  }
+}
+let pending = { energy:null, load:null, unknown:false };
+buildScale("sc-energy","energy");
+buildScale("sc-load","load");
+
+document.getElementById("dunno").onclick = e=>{
+  pending.unknown = !pending.unknown;
+  e.target.setAttribute("aria-pressed", pending.unknown);
+  document.getElementById("checkin-go").disabled = !(pending.energy && pending.load) && !pending.unknown;
+  updateOrb();
+};
+document.getElementById("checkin-go").onclick = ()=>{
+  day = { date: todayKey(), energy: pending.energy||3, load: pending.load||3, unknown: pending.unknown, tasks: (day&&day.date===todayKey())?day.tasks:null };
+  saveDay(); buildToday(); go("s-today");
+};
+document.getElementById("skip-checkin").onclick = ()=>{
+  if(!day || day.date!==todayKey()) day = { date:todayKey(), energy:3, load:3, unknown:true, tasks:null };
+  saveDay(); buildToday(); go("s-today");
+};
+
+/* ============================================================
+   TODAY
+   ============================================================ */
+const READ = {
+  baseline: ["A reasonable day so far.","Nothing here needs cutting down. Take what's useful."],
+  anxious:  ["Wound up.","Something specific is probably driving this. It might help to name it, or it might not — both fine."],
+  meltdown: ["Loaded.","This is a day for the minimum. What's below is optional, all of it."],
+  shutdown: ["Low and empty.","You don't have to do today properly. One thing, or none, is a fine outcome."]
+};
+const ADVICE = {
+  baseline: "Good window for anything you've been putting off. It'll be harder later in the week.",
+  anxious:  "Pick one thing and do only that. Deciding what to do costs more than doing it.",
+  meltdown: "Cut everything you can. Ask to skip what you can't cut. That is a legitimate use of your plan.",
+  shutdown: "You don't owe today a performance. Getting through it counts."
+};
+
+const PILL = { baseline:"Steady", anxious:"Wound up", meltdown:"Loaded", shutdown:"Low" };
+const BASE_TASKS = [
+  ["Get out of the house", ["Bag packed","Charger in","Water"]],
+  ["Homework due today", ["Find it","Put it where you'll hand it in"]],
+  ["Eat something", ["Anything counts"]],
+  ["Recovery time after school", ["Actually take it"]]
+];
+
+function buildToday(){
+  const st = inferState();
+  const name = (P && P.name) ? P.name : null;
+  document.getElementById("today-head").textContent = name ? `Today, ${name}` : "Today";
+  document.getElementById("today-read").textContent = READ[st][0] + " " + READ[st][1];
+  document.getElementById("today-advice").innerHTML = `<span class="pill" data-st="${st}">${PILL[st]}</span><p style="margin:0">${ADVICE[st]}</p>`;
+
+  const fl = document.getElementById("flagged");
+  const hard = (P && P.hard) || [];
+  if(!hard.length){ fl.innerHTML = `<p class="tiny">You didn't flag anything. You can add things on the You screen.</p>`; }
+  else {
+    fl.innerHTML = hard.slice(0,4).map(h=>{
+      const plan = (P.helps||[])[0] || "step out for a minute";
+      return `<div class="panel"><b>${h}</b><p style="margin:.3rem 0 0" class="tiny">Your plan: ${plan.toLowerCase()}. Decided in advance so you don't have to decide during.</p></div>`;
+    }).join("");
+  }
+
+  if(!day.tasks) day.tasks = BASE_TASKS.map(([n,s])=>({name:n, steps:s, done:false}));
+  const gran = (st==="meltdown"||st==="shutdown");
+  document.getElementById("tasks").innerHTML = day.tasks.map((t,i)=>`
+    <div class="task ${t.done?"done":""}">
+      <button class="tick" data-task="${i}" aria-pressed="${t.done}" aria-label="Mark done"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></button>
+      <div class="task-name">${t.name}
+        ${gran && t.steps.length ? `<ul class="steps">${t.steps.map(s=>`<li>${s}</li>`).join("")}</ul>` : ""}
+      </div>
+    </div>`).join("");
+  document.querySelectorAll("[data-task]").forEach(b=>{
+    b.onclick = ()=>{
+      const i=+b.dataset.task; const t = day.tasks[i];
+      t.done = !t.done; saveDay();
+      b.setAttribute("aria-pressed", String(t.done));
+      b.closest(".task").classList.toggle("done", t.done);
+    };
+  });
+}
+
+/* ============================================================
+   REGULATE
+   ============================================================ */
+function buildRegulate(){
+  const st = inferState();
+  document.getElementById("reg-sub").textContent = {
+    baseline:"Nothing urgent. Worth knowing what's here before you need it.",
+    anxious:"One thing at a time.",
+    meltdown:"Less is better right now.",
+    shutdown:"No pressure to pick anything."
+  }[st];
+
+  const own = document.getElementById("own-tools");
+  const mine = (P && P.helps) || [];
+  own.innerHTML = mine.length
+    ? mine.map(m=>`<button class="res" data-tool="${m}"><b>${TOOLS[m]?TOOLS[m][0]:m}</b><span>${m}</span></button>`).join("")
+    : `<p class="tiny">You didn't pick anything during setup. The list below is a starting point.</p>`;
+
+  drawStd();
+
+  document.getElementById("help-now").onclick = fireCrisis;
+  buildLogBox();
+}
+function drawStd(){
+  const t = TOOLBOX[Math.floor(Math.random()*TOOLBOX.length)];
+  const box = document.getElementById("std-tools");
+  box.innerHTML = `
+    <div class="panel idea">
+      <h3 style="margin-top:0">${t.t}</h3>
+      <p style="margin:0 0 .9rem">${t.d}</p>
+      <div class="choices" style="margin-bottom:0">
+        <button class="btn" id="std-do">Do this</button>
+        <button class="btn ghost" id="shuffle">Give me something else</button>
+      </div>
+    </div>`;
+  document.getElementById("std-do").onclick = ()=>{
+    if(t.screen === "draw") openDraw();
+    else if(t.screen === "breath") openBreath();
+    else if(t.screen === "five") openFive();
+    else if(t.screen === "sit") openSit();
+    else openTool([t.t, t.d]);
+  };
+  document.getElementById("shuffle").onclick = drawStd;
+
+  document.querySelectorAll("[data-tool]").forEach(b=>{
+    b.onclick = ()=>openTool(TOOLS[b.dataset.tool] || [b.dataset.tool,""]);
+  });
+}
+
+function openTool(t){
+  const el = document.getElementById("tool-open");
+  el.classList.remove("hidden");
+  el.innerHTML = `<h3 style="margin-top:0">${t[0]}</h3><p style="margin:0">${t[1]}</p>`;
+  el.scrollIntoView({block:"nearest"});
+}
+
+/* ============================================================
+   DRAW / TRACE
+   Guide patterns are drawn faintly underneath; the user draws over
+   them. Nothing is scored, nothing completes, nothing is saved.
+   ============================================================ */
+const PATTERNS = {
+  "Free draw": null,
+  "Spiral": (c,w,h)=>{ const p=new Path2D(); const cx=w/2, cy=h/2, R=Math.min(w,h)*0.42;
+    for(let a=0;a<=Math.PI*12;a+=0.05){ const r=R*(a/(Math.PI*12)); const x=cx+r*Math.cos(a), y=cy+r*Math.sin(a); a===0?p.moveTo(x,y):p.lineTo(x,y); } return p; },
+  "Waves": (c,w,h)=>{ const p=new Path2D();
+    for(let i=1;i<=5;i++){ const y0=h*i/6; p.moveTo(w*0.06,y0);
+      for(let x=w*0.06;x<=w*0.94;x+=4) p.lineTo(x, y0+Math.sin(x/38)*Math.min(28,h/16)); } return p; },
+  "Loops": (c,w,h)=>{ const p=new Path2D(); const y=h/2, A=Math.min(h*0.3,90); let started=false;
+    for(let x=w*0.06;x<=w*0.94;x+=3){ const t=(x-w*0.06)/60; const yy=y+Math.sin(t)*A*Math.cos(t/2);
+      started?p.lineTo(x,yy):(p.moveTo(x,yy),started=true); } return p; },
+  "Circles": (c,w,h)=>{ const p=new Path2D(); const cx=w/2, cy=h/2, R=Math.min(w,h)*0.42;
+    for(let i=1;i<=6;i++){ const r=R*i/6; p.moveTo(cx+r,cy); p.arc(cx,cy,r,0,Math.PI*2); } return p; },
+  "Zigzag": (c,w,h)=>{ const p=new Path2D();
+    for(let i=1;i<=6;i++){ const y0=h*i/7; p.moveTo(w*0.06,y0); let up=true;
+      for(let x=w*0.06;x<=w*0.94;x+=w*0.11){ p.lineTo(x, up?y0-h*0.045:y0+h*0.045); up=!up; } } return p; }
+};
+
+let padMode = "Spiral", padCtx = null, padDrawing = false;
+
+function padSize(){
+  const cv = document.getElementById("pad");
+  const r = cv.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  cv.width = r.width * dpr; cv.height = r.height * dpr;
+  padCtx = cv.getContext("2d");
+  padCtx.scale(dpr, dpr);
+  padCtx.lineCap = "round"; padCtx.lineJoin = "round";
+  padGuide();
+}
+function padGuide(){
+  const cv = document.getElementById("pad");
+  const w = cv.clientWidth, h = cv.clientHeight;
+  padCtx.clearRect(0,0,w,h);
+  const fn = PATTERNS[padMode];
+  if(!fn) return;
+  padCtx.save();
+  padCtx.strokeStyle = cssVar("--line"); padCtx.lineWidth = 8;
+  padCtx.stroke(fn(padCtx,w,h));
+  padCtx.restore();
+}
+function padPos(e){
+  const r = document.getElementById("pad").getBoundingClientRect();
+  return [e.clientX - r.left, e.clientY - r.top];
+}
+function padStart(e){
+  padDrawing = true;
+  const [x,y] = padPos(e);
+  padCtx.strokeStyle = cssVar("--teal"); padCtx.lineWidth = 3.5;
+  padCtx.beginPath(); padCtx.moveTo(x,y);
+  document.getElementById("pad").setPointerCapture(e.pointerId);
+}
+function padMove(e){ if(!padDrawing) return; const [x,y]=padPos(e); padCtx.lineTo(x,y); padCtx.stroke(); }
+function padEnd(){ padDrawing = false; }
+
+function openDraw(){
+  const pad = document.getElementById("drawpad");
+  pad.classList.add("on");
+  document.body.style.overflow = "hidden";
+
+  const modes = document.getElementById("pad-modes");
+  modes.innerHTML = "";
+  Object.keys(PATTERNS).forEach(m=>{
+    const b = document.createElement("button");
+    b.className = "chip"; b.textContent = m;
+    b.setAttribute("aria-pressed", m === padMode);
+    b.onclick = ()=>{ padMode = m; [...modes.children].forEach(c=>c.setAttribute("aria-pressed", c===b)); padGuide(); };
+    modes.appendChild(b);
+  });
+  document.getElementById("pad-note").textContent =
+    padMode === "Free draw" ? "Nothing to make. The hand movement is the point."
+                            : "Follow the faint line with your finger. No accuracy needed, no finish.";
+  requestAnimationFrame(padSize);
+}
+function closeDraw(){
+  document.getElementById("drawpad").classList.remove("on");
+  document.body.style.overflow = "";
+}
+document.getElementById("pad-close").onclick = closeDraw;
+document.getElementById("pad-clear").onclick = padGuide;
+(function(){
+  const cv = document.getElementById("pad");
+  cv.addEventListener("pointerdown", padStart);
+  cv.addEventListener("pointermove", padMove);
+  cv.addEventListener("pointerup", padEnd);
+  cv.addEventListener("pointercancel", padEnd);
+  window.addEventListener("resize", ()=>{ if(document.getElementById("drawpad").classList.contains("on")) padSize(); });
+})();
+
+/* ============================================================
+   SCRIPTS
+   ============================================================ */
+function buildScripts(){
+  const cats = Object.keys(SCRIPTS);
+  const el = document.getElementById("script-cats");
+  el.className = "choices";
+  el.innerHTML = "";
+  cats.forEach((c,i)=>{
+    const b = document.createElement("button");
+    b.className = "chip"; b.textContent = c; b.setAttribute("aria-pressed", i===0);
+    b.onclick = ()=>{ [...el.children].forEach(x=>x.setAttribute("aria-pressed", x===b)); renderScripts(c); };
+    el.appendChild(b);
+  });
+  renderScripts(cats[0]);
+}
+function renderScripts(cat){
+  const list = SCRIPTS[cat];
+  const el = document.getElementById("script-list");
+  el.innerHTML = list.map((s,i)=>`<div class="panel say"><p>${esc(s)}</p><div class="say-actions"><button class="chip act" data-copy="${i}">Copy</button><button class="chip act" data-big="${i}">Show large</button></div></div>`).join("");
+  el.querySelectorAll("[data-copy]").forEach(b=>{
+    b.onclick = async ()=>{
+      try{ await navigator.clipboard.writeText(list[+b.dataset.copy]); b.textContent = "Copied"; }
+      catch(e){
+        const r = document.createRange(); r.selectNodeContents(b.closest(".panel").querySelector("p"));
+        const sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = "Selected";
+      }
+      setTimeout(()=>{ b.textContent = "Copy"; }, 1800);
+    };
+  });
+  el.querySelectorAll("[data-big]").forEach(b=>{ b.onclick = ()=>openBig(list[+b.dataset.big]); });
+}
+
+/* ============================================================
+   YOU
+   ============================================================ */
+function buildYou(){
+  if(!P) return;
+  const rows = [
+    ["Name", P.name || "not set"],
+    ["Age", P.age || "not set"],
+    ["Hard for you", (P.sensory||[]).join(", ") || "nothing recorded"],
+    ["What helps", (P.helps||[]).join(", ") || "nothing recorded"],
+    ["Hard parts of the day", (P.hard||[]).join(", ") || "nothing recorded"],
+    ["Talking under stress", P.speech || "not set"],
+    ["Your person", P.person || "not set"],
+    ["Interests", P.interests || "not set"]
+  ];
+  document.getElementById("profile-dump").innerHTML =
+    rows.map(([k,v])=>`<div class="kv"><b>${esc(k)}</b><span>${esc(v)}</span></div>`).join("");
+  document.getElementById("you-support").innerHTML =
+    (P.person ? resHTML(P.person,"The person you picked","") : "") + linesHTML() +
+    `<p class="tiny">Numbers last checked October 2026. Services change — confirm with the issuing authority if you are relying on one.</p>`;
+  buildLogView();
+}
+document.getElementById("export").onclick = ()=>{
+  const blob = new Blob([JSON.stringify({profile:P, day, overloadLog:overloads}, null, 2)], {type:"application/json"});
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = "spectrum-data.json"; a.click();
+};
+document.getElementById("redo").onclick = ()=>{
+  Store.del("spectrum.profile"); Store.del("spectrum.day");
+  location.reload();
+};
+
+/* ============================================================
+   OVERLOAD LOG
+   Optional. Stays on this device. No free text, so nothing written
+   by the person can end up in a summary. It records what was
+   logged, not why something happened.
+   ============================================================ */
+const LOG_KEY = "spectrum.log";
+const LOG_OPTS = {
+  what:  OPTS.sensory.concat(["Hungry, tired or thirsty","Something else","I don't know"]),
+  where: ["School","Home","Out somewhere","Somewhere else"],
+  when:  ["Morning","Afternoon","Evening","Night"]
+};
+let overloads = Store.get(LOG_KEY, []);
+if(!Array.isArray(overloads)) overloads = [];
+function saveLog(){ Store.set(LOG_KEY, overloads); }
+const esc = s => String(s).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function timeBucket(){
+  const h = new Date().getHours();
+  return h>=5 && h<12 ? "Morning" : h>=12 && h<17 ? "Afternoon" : h>=17 && h<21 ? "Evening" : "Night";
+}
+function dayText(e){ return new Date(e.t).toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}); }
+
+function chipsFor(el, list, isOn, pick){
+  el.innerHTML = "";
+  list.forEach(v=>{
+    const b = document.createElement("button");
+    b.className = "chip"; b.textContent = v;
+    b.setAttribute("aria-pressed", String(isOn(v)));
+    b.onclick = ()=>{
+      pick(v);
+      [...el.children].forEach(c=>c.setAttribute("aria-pressed", String(isOn(c.textContent))));
+    };
+    el.appendChild(b);
+  });
+}
+
+/* The form: one tap on what it was, then Save. The rest is optional. */
+function openLogForm(box, done){
+  const f = { what:[], where:null, when:timeBucket() };
+  const DK = "I don't know";
+  box.innerHTML = `<div class="panel">
+    <label class="fld">What was it? Pick any that fit.</label>
+    <div class="choices" data-lg="what"></div>
+    <label class="fld">Where? <span class="tiny">Optional</span></label>
+    <div class="choices" data-lg="where"></div>
+    <label class="fld">When?</label>
+    <div class="choices" data-lg="when"></div>
+    <div class="choices" style="margin-bottom:0">
+      <button class="btn" data-lg="save" disabled>Save</button>
+      <button class="btn ghost" data-lg="cancel">Not now</button>
+    </div>
+  </div>`;
+  const save = box.querySelector('[data-lg="save"]');
+  chipsFor(box.querySelector('[data-lg="what"]'), LOG_OPTS.what, v=>f.what.includes(v), v=>{
+    if(v === DK) f.what = f.what.includes(DK) ? [] : [DK];
+    else {
+      const rest = f.what.filter(x=>x !== DK);
+      f.what = rest.includes(v) ? rest.filter(x=>x !== v) : rest.concat(v);
+    }
+    save.disabled = !f.what.length;
+  });
+  chipsFor(box.querySelector('[data-lg="where"]'), LOG_OPTS.where, v=>f.where===v, v=>{ f.where = f.where===v ? null : v; });
+  chipsFor(box.querySelector('[data-lg="when"]'), LOG_OPTS.when, v=>f.when===v, v=>{ f.when = v; });
+  save.onclick = ()=>{
+    overloads.push({ id: Date.now(), t: new Date().toISOString(), what: f.what.slice(), where: f.where, when: f.when });
+    saveLog();
+    done(true);
+  };
+  box.querySelector('[data-lg="cancel"]').onclick = ()=>done(false);
+}
+
+/* Ground screen: a single quiet button. */
+function buildLogBox(){
+  const box = document.getElementById("log-box");
+  const afterForm = saved=>{
+    if(!saved){ buildLogBox(); return; }
+    box.innerHTML = `<div class="panel mark"><p style="margin:0 0 .8rem">Saved. Nothing else to do.</p><button class="btn ghost mini" data-lg="again">Log another</button></div>`;
+    box.querySelector('[data-lg="again"]').onclick = ()=>openLogForm(box, afterForm);
+  };
+  box.innerHTML = `<button class="btn ghost" data-lg="open">Log an overload</button>`;
+  box.querySelector('[data-lg="open"]').onclick = ()=>openLogForm(box, afterForm);
+}
+
+/* You screen: what was logged, shown as counts. No conclusions. */
+function tally(list){
+  const m = {};
+  list.forEach(x=>{ if(x) m[x] = (m[x]||0) + 1; });
+  return Object.entries(m).sort((a,b)=>b[1]-a[1]);
+}
+function barsHTML(rows, n){
+  return rows.map(([k,c])=>`<div class="bar"><i style="width:${Math.round(c/n*100)}%"></i><div class="l"><span>${esc(k)}</span><span>${c} of ${n}</span></div></div>`).join("");
+}
+function summaryText(){
+  const n = overloads.length;
+  const ms = overloads.map(e=>new Date(e.t).getTime());
+  const fmt = ms=>new Date(ms).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"});
+  const list = rows=>rows.map(([k,c])=>`- ${k}: ${c} of ${n}`).join("\n");
+  const where = tally(overloads.map(e=>e.where));
+  const recent = overloads.slice().reverse().slice(0,30);
+  return [
+    "Overload log summary",
+    `Covers ${fmt(Math.min(...ms))} to ${fmt(Math.max(...ms))}. ${n} ${n===1?"entry":"entries"}.`,
+    "",
+    "What was going on (an entry can have more than one):",
+    list(tally(overloads.flatMap(e=>e.what||[]))),
+    ...(where.length ? ["", "Where:", list(where)] : []),
+    "",
+    "Time of day:",
+    list(tally(overloads.map(e=>e.when))),
+    "",
+    n>30 ? "Most recent 30 entries:" : "Entries:",
+    ...recent.map(e=>`- ${dayText(e)}, ${e.when}${e.where?", "+e.where:""}: ${(e.what||[]).join("; ")}`),
+    "",
+    "This is a self-report. It shows what was logged, not why it happened."
+  ].join("\n");
+}
+function showSummary(){
+  const box = document.getElementById("lv-summary");
+  const text = summaryText();
+  box.innerHTML = `<div class="panel mark">
+    <p class="tiny" style="margin-top:0">This is what would be shared. You choose who sees it. Nothing is sent from here.</p>
+    <div style="white-space:pre-wrap;margin-bottom:.9rem">${esc(text)}</div>
+    <div class="choices" style="margin-bottom:0">
+      <button class="chip" data-s="copy">Copy</button>
+      <button class="chip" data-s="file">Save as a text file</button>
+      <button class="chip" data-s="close">Close</button>
+    </div>
+    <p class="tiny" data-s="msg" style="margin:.6rem 0 0"></p>
+  </div>`;
+  const msg = box.querySelector('[data-s="msg"]');
+  box.querySelector('[data-s="copy"]').onclick = async ()=>{
+    try{ await navigator.clipboard.writeText(text); msg.textContent = "Copied."; }
+    catch(e){ msg.textContent = "Couldn't copy here. Use Save as a text file instead."; }
+  };
+  box.querySelector('[data-s="file"]').onclick = ()=>{
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([text], {type:"text/plain"}));
+    a.download = "spectrum-overload-summary.txt"; a.click();
+  };
+  box.querySelector('[data-s="close"]').onclick = ()=>{ box.innerHTML = ""; };
+}
+function buildLogView(){
+  const el = document.getElementById("log-view");
+  const n = overloads.length;
+  if(!n){
+    el.innerHTML = `<p class="tiny">Nothing logged yet. You can log one from the Ground screen, or here. It's optional.</p>
+      <div class="choices"><button class="chip" data-lv="add">Add an entry</button></div>
+      <div id="lv-form"></div>`;
+  } else {
+    const pat = n >= 5
+      ? `<h3 style="margin-top:0">What was going on</h3>${barsHTML(tally(overloads.flatMap(e=>e.what||[])).slice(0,5), n)}
+         ${overloads.some(e=>e.where) ? `<h3>Where</h3>${barsHTML(tally(overloads.map(e=>e.where)), n)}` : ""}
+         <h3>Time of day</h3>${barsHTML(tally(overloads.map(e=>e.when)), n)}`
+      : `<p class="tiny" style="margin:0">A few more entries are needed before a pattern means much.</p>`;
+    const recent = overloads.slice().reverse().slice(0,10);
+    el.innerHTML = `
+      <p class="tiny" style="margin-bottom:1rem">${n} logged. This only shows what you logged. It can't tell you why something happened.</p>
+      <div class="panel">${pat}</div>
+      <div class="choices">
+        <button class="chip" data-lv="add">Add an entry</button>
+        <button class="chip" data-lv="sum">Make a summary to share</button>
+      </div>
+      <div id="lv-form"></div>
+      <div id="lv-summary"></div>
+      <h3>${n>10 ? "Most recent 10" : "Entries"}</h3>
+      <div class="panel">${recent.map(e=>`<div class="logrow"><div><b>${esc(dayText(e))} · ${esc(e.when)}${e.where?" · "+esc(e.where):""}</b><p class="tiny" style="margin:0">${(e.what||[]).map(esc).join("; ")}</p></div><button class="btn ghost mini" data-del="${esc(e.id)}" aria-label="Remove the entry from ${esc(dayText(e))}, ${esc(e.when)}">Remove</button></div>`).join("")}</div>
+      <div id="lv-clear"><button class="chip" data-lv="clear">Clear the log</button></div>`;
+    el.querySelector('[data-lv="sum"]').onclick = showSummary;
+    el.querySelectorAll("[data-del]").forEach(b=>{
+      b.onclick = ()=>{ overloads = overloads.filter(e=>String(e.id) !== b.dataset.del); saveLog(); buildLogView(); };
+    });
+    el.querySelector('[data-lv="clear"]').onclick = ()=>{
+      const c = el.querySelector("#lv-clear");
+      c.innerHTML = `<p style="margin:0 0 .6rem">Clear all ${n} ${n===1?"entry":"entries"}? This can't be undone.</p>
+        <div class="choices"><button class="chip" data-c="yes">Yes, clear them</button><button class="chip" data-c="no">Keep them</button></div>`;
+      c.querySelector('[data-c="yes"]').onclick = ()=>{ overloads = []; saveLog(); buildLogView(); };
+      c.querySelector('[data-c="no"]').onclick = ()=>buildLogView();
+    };
+  }
+  el.querySelector('[data-lv="add"]').onclick = ()=>openLogForm(el.querySelector("#lv-form"), saved=>{
+    if(saved) buildLogView(); else el.querySelector("#lv-form").innerHTML = "";
+  });
+}
+
+/* ============================================================
+   NAV
+   ============================================================ */
+/* ============================================================
+   AMBIENT FIELD, TABS, GUIDED EXERCISES
+   Nothing here records or sends anything. Exercises run on screen
+   and stop when closed.
+   ============================================================ */
+const THEME_LABEL = { auto:"Auto", light:"Light", dark:"Dark" };
+const THEME_ICON = {
+  auto:'<circle cx="12" cy="12" r="8"/><path d="M12 4a8 8 0 010 16z" fill="currentColor"/>',
+  light:'<circle cx="12" cy="12" r="3.8"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4"/>',
+  dark:'<path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/>'
+};
+const HOST_THEME = document.documentElement.getAttribute("data-theme");
+let themePref = Store.get("spectrum.theme", "auto");
+if(!THEME_LABEL[themePref]) themePref = "auto";
+function applyTheme(pref){
+  themePref = pref; Store.set("spectrum.theme", pref);
+  const root = document.documentElement;
+  if(pref === "auto"){ if(HOST_THEME) root.setAttribute("data-theme", HOST_THEME); else root.removeAttribute("data-theme"); }
+  else root.setAttribute("data-theme", pref);
+  const btn = document.getElementById("theme-btn");
+  btn.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${THEME_ICON[pref]}</svg>`;
+  btn.setAttribute("aria-label", `Colour theme: ${THEME_LABEL[pref].toLowerCase()}. Tap to change.`);
+  document.querySelectorAll("#theme-choices .chip").forEach(c=>c.setAttribute("aria-pressed", String(c.dataset.t === pref)));
+}
+(function(){
+  const box = document.getElementById("theme-choices");
+  Object.keys(THEME_LABEL).forEach(k=>{
+    const c = document.createElement("button");
+    c.className = "chip"; c.dataset.t = k; c.textContent = THEME_LABEL[k]; c.setAttribute("aria-pressed","false");
+    c.onclick = ()=>applyTheme(k);
+    box.appendChild(c);
+  });
+  document.getElementById("theme-btn").onclick = ()=>{
+    const order = Object.keys(THEME_LABEL);
+    applyTheme(order[(order.indexOf(themePref)+1) % order.length]);
+  };
+  applyTheme(themePref);
+})();
+const cssVar = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function setAmbient(st){ document.getElementById("ambient").dataset.state = st; }
+
+const E_LBL = ["Running on empty","Low","Okay","Good","Full"];
+const L_LBL = ["Barely anything","A little","Some","A lot","Too much"];
+function updateOrb(){
+  const orb = document.getElementById("orb"), cap = document.getElementById("orb-cap");
+  orb.style.setProperty("--lvl", pending.energy ? (pending.energy*20)+"%" : "0%");
+  orb.style.setProperty("--halo", pending.load ? ((pending.load-1)/4).toFixed(2) : "0");
+  const parts = [];
+  if(pending.energy) parts.push("Energy: " + E_LBL[pending.energy-1].toLowerCase() + ".");
+  if(pending.load) parts.push("Weighing on you: " + L_LBL[pending.load-1].toLowerCase() + ".");
+  if(pending.unknown) parts.push("Not sure how you feel. That's fine.");
+  cap.textContent = parts.length ? parts.join(" ") : "Tap below. The circle follows you.";
+  if((pending.energy && pending.load) || pending.unknown)
+    setAmbient(stateFrom(pending.energy||3, pending.load||3, pending.unknown));
+}
+function navExtras(id){
+  setAmbient(inferState());
+  const tabs = [...document.querySelectorAll("#tabs button")];
+  const i = tabs.findIndex(b=>b.dataset.go===id);
+  const t = document.getElementById("tabs");
+  t.classList.toggle("noind", i<0);
+  if(i>=0) t.style.setProperty("--i", i);
+  if(id==="s-checkin"){
+    document.getElementById("greet").textContent = (P && P.name) ? "How are you doing, " + P.name + "?" : "How are you doing?";
+    updateOrb();
+  }
+}
+
+/* welcome ribbons lean gently toward the pointer */
+(function(){
+  const h = document.getElementById("hero");
+  const calm = ()=> document.body.classList.contains("no-motion") || matchMedia("(prefers-reduced-motion: reduce)").matches;
+  h.addEventListener("pointermove", e=>{
+    if(calm()) return;
+    const r = h.getBoundingClientRect();
+    h.style.setProperty("--px", ((e.clientX - r.left)/r.width - .5).toFixed(3));
+  });
+  h.addEventListener("pointerleave", ()=>h.style.setProperty("--px", 0));
+})();
+
+/* full-screen quiet room used by every exercise */
+const focusEl = document.getElementById("focus"), focusBody = document.getElementById("focus-body");
+let focusTimers = [], focusReturn = null;
+const later = (ms, fn)=>{ const id = setTimeout(fn, ms); focusTimers.push(id); return id; };
+function clearFocusTimers(){ focusTimers.forEach(clearTimeout); focusTimers = []; }
+function openFocus(html){
+  focusReturn = document.activeElement;
+  clearFocusTimers();
+  focusBody.innerHTML = html;
+  focusEl.classList.add("on");
+  document.body.style.overflow = "hidden";
+  document.getElementById("focus-close").focus();
+}
+function closeFocus(){
+  clearFocusTimers();
+  focusEl.classList.remove("on");
+  focusBody.innerHTML = "";
+  document.body.style.overflow = "";
+  if(focusReturn && focusReturn.isConnected) focusReturn.focus();
+}
+document.getElementById("focus-close").onclick = closeFocus;
+document.addEventListener("keydown", e=>{
+  if(e.key !== "Escape") return;
+  if(focusEl.classList.contains("on")) closeFocus();
+  else if(document.getElementById("crisis").classList.contains("on")) closeCrisis();
+  else if(document.getElementById("drawpad").classList.contains("on")) closeDraw();
+});
+
+function openBig(text){
+  openFocus(`<p class="bigsay">${esc(text)}</p><p class="tiny">Hold the screen up to show someone. Close it when you're done.</p>`);
+}
+function openSit(){
+  openFocus(`<p class="bigsay">Nothing to do.</p><p class="tiny">This screen won't move or change. Close it when you want to.</p>`);
+}
+
+function openBreath(){
+  openFocus(`<h2 class="f-title">Slow the breath out</h2>
+    <div class="breath-stage"><div class="breath-orb" id="b-orb"></div><div class="breath-word" id="b-word" aria-live="polite">Ready</div></div>
+    <p class="tiny" id="b-round">In for four, out for six. Six rounds.</p>
+    <button class="btn" id="b-go">Start</button>
+    <p class="tiny">Stop whenever. If counting makes it worse, close this.</p>`);
+  const orb = document.getElementById("b-orb"), word = document.getElementById("b-word");
+  const round = document.getElementById("b-round"), go = document.getElementById("b-go");
+  let running = false;
+  const phase = (w, sec, scale)=>{
+    orb.style.transition = `transform ${sec}s ease-in-out`;
+    orb.style.transform = `scale(${scale})`;
+    for(let s=0; s<sec; s++) later(s*1000, ()=>{ word.textContent = `${w} ${sec-s}`; });
+  };
+  const stop = msg=>{
+    running = false; clearFocusTimers();
+    orb.style.transition = "transform 1s ease-in-out"; orb.style.transform = "scale(.55)";
+    word.textContent = msg; go.textContent = "Start again";
+  };
+  const cycle = n=>{
+    if(!running) return;
+    if(n > 6){ stop("Done"); round.textContent = "That was six. Stop here or go again."; return; }
+    round.textContent = `Round ${n} of 6`;
+    phase("In", 4, 1);
+    later(4000, ()=>phase("Out", 6, .55));
+    later(10000, ()=>cycle(n+1));
+  };
+  go.onclick = ()=>{
+    if(running){ stop("Paused"); round.textContent = "Stopped. Nothing to finish."; }
+    else { running = true; go.textContent = "Stop"; cycle(1); }
+  };
+}
+
+function openFive(){
+  const STAGES = [[5,"things you can see"],[4,"things you can touch"],[3,"things you can hear"]];
+  let si = 0;
+  const render = ()=>{
+    const [n, txt] = STAGES[si];
+    focusBody.innerHTML = `<h2 class="f-title">${n} ${txt}</h2>
+      <p class="tiny">Tap a circle each time you find one. Out loud or in your head.</p>
+      <div class="dots">${Array.from({length:n},(_,i)=>`<button class="dot" aria-pressed="false" aria-label="Found one, ${i+1} of ${n}"></button>`).join("")}</div>
+      <button class="btn" id="five-next" disabled>${si<2 ? "Next" : "Finish"}</button>`;
+    const dots = [...focusBody.querySelectorAll(".dot")], next = document.getElementById("five-next");
+    dots.forEach(d=>d.onclick = ()=>{
+      d.setAttribute("aria-pressed", String(d.getAttribute("aria-pressed") !== "true"));
+      next.disabled = !dots.every(x=>x.getAttribute("aria-pressed") === "true");
+    });
+    next.onclick = ()=>{
+      si++;
+      if(si >= STAGES.length){
+        focusBody.innerHTML = `<p class="bigsay">That's all of them.</p><p class="tiny">Stay here as long as you like, or close this.</p>`;
+      } else render();
+    };
+  };
+  openFocus("");
+  render();
+}
+
+function go(id){
+  navExtras(id);
+  document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on", s.id===id));
+  document.querySelectorAll("#tabs button").forEach(b=>{
+    if(b.dataset.go===id) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current");
+  });
+  if(id==="s-today") buildToday();
+  if(id==="s-regulate") buildRegulate();
+  if(id==="s-scripts") buildScripts();
+  if(id==="s-you") buildYou();
+  window.scrollTo(0,0);
+}
+document.querySelectorAll("#tabs button").forEach(b=>{ b.onclick = ()=>go(b.dataset.go); });
+
+/* ============================================================
+   BOOT
+   ============================================================ */
+if(P){
+  applyUI();
+  document.getElementById("tabs").classList.remove("hide");
+  if(day && day.date === todayKey()){ buildToday(); go("s-today"); }
+  else go("s-checkin");
+} else {
+  showStep(0);
+}
+</script>
+
+</body></html>
